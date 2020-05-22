@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CandyMarket.DataAccess;
+using CandyMarket.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -24,11 +25,17 @@ namespace CandyMarket.Controllers
             return Ok(AllCandy);
         }
 
-        // GET api/<CandyMarketController>/5
+        // GET api/candy/1
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult GetCandyByUser(int id)
         {
-            return "value";
+            var repo = new CandyMarketRepository();
+            //var user = getUserById(id);
+            var candy = repo.GetCandyByUser(id);
+            //user == null
+            if (candy == null) return NotFound("No candy or user found."); // Add user to the IF statement.
+
+            return Ok(candy);
         }
 
         // POST api/<CandyMarketController>
