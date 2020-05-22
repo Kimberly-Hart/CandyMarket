@@ -44,10 +44,13 @@ namespace CandyMarket.Controllers
         {
         }
 
-        // PUT api/<CandyMarketController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PUT api/candy/eat/userCandyId
+        [HttpPut("eat/{userId}/{candyId}")]
+        public IActionResult EatCandy(int userId, int candyId)
         {
+            var repo = new CandyMarketRepository();
+            var userCandy = repo.EatCandy(userId, candyId);
+            return Ok(userCandy);
         }
 
         // DELETE api/<CandyMarketController>/5
