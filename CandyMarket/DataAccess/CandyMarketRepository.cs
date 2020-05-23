@@ -28,7 +28,8 @@ namespace CandyMarket.DataAccess
                         from Candy
 	                        join UserCandy on Candy.ID = UserCandy.CandyId
                                 join[User] on UserCandy.UserId = [User].ID
-                                    where[User].ID = @id";
+                                    where[User].ID = @id
+                                        and isEaten = 0";
 
             using (var db = new SqlConnection(ConnectionString))
             {
