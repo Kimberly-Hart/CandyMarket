@@ -53,6 +53,15 @@ namespace CandyMarket.Controllers
             return Ok(userCandy);
         }
 
+        //PUT api/candy/eat/userId/FlavorCategory
+        [HttpPut("eat/random/{userId}/{flavorCategory}")]
+        public IActionResult userFlavorCategory(int userId, string flavorCategory)
+        {
+            var repo = new CandyMarketRepository();
+            var userFlavor = repo.GetRandomFlavor(userId, flavorCategory);
+            return Ok(userFlavor);
+        }
+
         // DELETE api/<CandyMarketController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
