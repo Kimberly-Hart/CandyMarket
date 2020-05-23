@@ -90,6 +90,7 @@ namespace CandyMarket.DataAccess
                                 join Candy on Candy.Id = UserCandy.CandyId
                                 join [User] on [User].Id = UserCandy.UserId
                                 where Candy.FlavorCategory = @flavorCategory
+                                and UserCandy.isEaten = 0
                                 and [User].Id = @userId";
 
             var sqlUpdate = @"Update UserCandy
