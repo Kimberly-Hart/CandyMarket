@@ -83,7 +83,7 @@ namespace CandyMarket.DataAccess
             }
         }
 
-        public List<RandomCandy> GetRandomFlavor(int userId, string flavorCategory)
+        public List<RandomCandy> EatRandomCandyByFlavor(int userId, string flavorCategory)
         {
             var sql = @"select UserCandy.Id as UserCandyId, Candy.FlavorCategory, Candy.Id
                            from Candy
@@ -96,6 +96,9 @@ namespace CandyMarket.DataAccess
             {
                 var parameters = new { UserId = userId, FlavorCategory = flavorCategory };
                 var randomCandy = db.Query<RandomCandy>(sql, parameters).ToList();
+                Random rand = new Random();
+                var randomId = rand.Next(0, randomCandy.Count());
+                var randomCandyId = randomCandy[randomId].Id;
                 return randomCandy;
             }
         }

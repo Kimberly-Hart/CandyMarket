@@ -58,7 +58,7 @@ namespace CandyMarket.Controllers
         public IActionResult userFlavorCategory(int userId, string flavorCategory)
         {
             var repo = new CandyMarketRepository();
-            var userFlavor = repo.GetRandomFlavor(userId, flavorCategory);
+            var userFlavor = repo.EatRandomCandyByFlavor(userId, flavorCategory);
             return Ok(userFlavor);
         }
 
