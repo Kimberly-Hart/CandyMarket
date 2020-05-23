@@ -82,5 +82,25 @@ namespace CandyMarket.DataAccess
                 return candy;
             }
         }
+
+        public List<RandomCandy> EatRandomCandyByFlavor(int userId, string flavorCategory)
+        {
+            var sql = @"select UserCandy.Id as UserCandyId, Candy.FlavorCategory, Candy.Id
+                           from Candy
+	                          join UserCandy on Candy.ID = UserCandy.CandyId
+                                  join[User] on UserCandy.UserId = [User].ID
+                                      where[User].ID = @userId
+                                          and FlavorCategory = @flavorCategory";
+
+            using (var db = new SqlConnection(ConnectionString))
+            {
+                var parameters = new { UserId = userId, FlavorCategory = flavorCategory };
+                var randomCandy = db.Query<RandomCandy>(sql, parameters).ToList();
+                Random rand = new Random();
+                var randomId = rand.Next(0, randomCandy.Count());
+                var randomCandyId = randomCandy[randomId].Id;
+                return randomCandy;
+            }
+        }
     }
 }
