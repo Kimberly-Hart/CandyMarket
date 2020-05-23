@@ -7,8 +7,9 @@ namespace CandyMarket.Models.ViewModels
 {
     public class RandomCandy
     {
-        public int Id { get; set; }
+        public int CandyId { get; set; }
         public int UserCandyId { get; set; }
         public string FlavorCategory { get; set; }
+        public DateTime DateReceived { get; set; }
     }
 }
