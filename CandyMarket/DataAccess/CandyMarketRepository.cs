@@ -83,23 +83,33 @@ namespace CandyMarket.DataAccess
             }
         }
 
-        public List<RandomCandy> EatRandomCandyByFlavor(int userId, string flavorCategory)
+        public RandomCandy EatRandomCandyByFlavor(int userId, string flavorCategory)
         {
-            var sql = @"select UserCandy.Id as UserCandyId, Candy.FlavorCategory, Candy.Id
-                           from Candy
-	                          join UserCandy on Candy.ID = UserCandy.CandyId
-                                  join[User] on UserCandy.UserId = [User].ID
-                                      where[User].ID = @userId
-                                          and FlavorCategory = @flavorCategory";
+            var sql = @"select DateReceived, CandyId, UserId, Candy.FlavorCategory, UserCandy.Id as UserCandyId
+                                from UserCandy
+                                join Candy on Candy.Id = UserCandy.CandyId
+                                join [User] on [User].Id = UserCandy.UserId
+                                where Candy.FlavorCategory = @flavorCategory
+                                and [User].Id = @userId";
+
+            var sqlUpdate = @"Update UserCandy
+                                set isEaten = 1
+                                     where UserCandy.Id = @candyToEat;";
+
 
             using (var db = new SqlConnection(ConnectionString))
             {
                 var parameters = new { UserId = userId, FlavorCategory = flavorCategory };
-                var randomCandy = db.Query<RandomCandy>(sql, parameters).ToList();
+                var flavorCandy = db.Query<RandomCandy>(sql, parameters).ToList();
                 Random rand = new Random();
-                var randomId = rand.Next(0, randomCandy.Count());
-                var randomCandyId = randomCandy[randomId].Id;
-                return randomCandy;
+                var distinctIds = flavorCandy.Select(f => f.CandyId).Distinct();
+                var randomCandyIndex = rand.Next(0, flavorCandy.Count());
+                var randomCandyId = flavorCandy[randomCandyIndex].CandyId;
+                var selectedCandy = flavorCandy.Where(c => c.CandyId == randomCandyId).OrderBy(c => c.DateReceived).FirstOrDefault();
+                var candyToEat = selectedCandy.UserCandyId;
+                var parameters2 = new { CandyToEat = candyToEat };
+                db.Execute(sqlUpdate, parameters2);
+                return selectedCandy;
             }
         }
     }
