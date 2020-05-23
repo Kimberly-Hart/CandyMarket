@@ -83,14 +83,20 @@ namespace CandyMarket.DataAccess
             }
         }
 
-        public List<RandomCandy> EatRandomCandyByFlavor(int userId, string flavorCategory)
+        public RandomCandy EatRandomCandyByFlavor(int userId, string flavorCategory)
         {
             var sql = @"select DateReceived, CandyId, UserId, Candy.FlavorCategory, UserCandy.Id as UserCandyId
                                 from UserCandy
                                 join Candy on Candy.Id = UserCandy.CandyId
                                 join [User] on [User].Id = UserCandy.UserId
                                 where Candy.FlavorCategory = @flavorCategory
+                                and UserCandy.isEaten = 0
                                 and [User].Id = @userId";
+
+            var sqlUpdate = @"Update UserCandy
+                                set isEaten = 1
+                                     where UserCandy.Id = @candyToEat;";
+
 
             using (var db = new SqlConnection(ConnectionString))
             {
@@ -98,10 +104,13 @@ namespace CandyMarket.DataAccess
                 var flavorCandy = db.Query<RandomCandy>(sql, parameters).ToList();
                 Random rand = new Random();
                 var distinctIds = flavorCandy.Select(f => f.CandyId).Distinct();
-                var randomCandyIndex = rand.Next(0, distinctIds.Count());
+                var randomCandyIndex = rand.Next(0, flavorCandy.Count());
                 var randomCandyId = flavorCandy[randomCandyIndex].CandyId;
-                var selectedCandyId = flavorCandy.Where(c => c.CandyId == randomCandyId).OrderBy(c => c.DateReceived).FirstOrDefault();
-                return flavorCandy;
+                var selectedCandy = flavorCandy.Where(c => c.CandyId == randomCandyId).OrderBy(c => c.DateReceived).FirstOrDefault();
+                var candyToEat = selectedCandy.UserCandyId;
+                var parameters2 = new { CandyToEat = candyToEat };
+                db.Execute(sqlUpdate, parameters2);
+                return selectedCandy;
             }
         }
     }
