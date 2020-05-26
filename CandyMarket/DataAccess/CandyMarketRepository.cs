@@ -113,5 +113,19 @@ namespace CandyMarket.DataAccess
                 return selectedCandy;
             }
         }
+
+        public void TradeCandy(int userId1, int userId2)
+        {
+            var sql = @"update UserCandy
+                        set UserId = case when UserId = @userId1 then @userId2 
+                        when UserId = @userId2 then @userId1
+                        else UserId end";
+
+            using (var db = new SqlConnection(ConnectionString))
+            {
+                var parameters = new { UserId1 = userId1, UserId2 = userId2 };
+                db.Execute(sql, parameters);
+            }
+        }
     }
 }

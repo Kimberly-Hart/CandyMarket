@@ -38,13 +38,7 @@ namespace CandyMarket.Controllers
             return Ok(candy);
         }
 
-        // POST api/<CandyMarketController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/candy/eat/userCandyId
+        // PUT api/candy/eat/1/4
         [HttpPut("eat/{userId}/{candyId}")]
         public IActionResult EatCandy(int userId, int candyId)
         {
@@ -53,13 +47,22 @@ namespace CandyMarket.Controllers
             return Ok(userCandy);
         }
 
-        //PUT api/candy/eat/userId/FlavorCategory
+        //PUT api/candy/eat/random/1/Chocolate
         [HttpPut("eat/random/{userId}/{flavorCategory}")]
         public IActionResult userFlavorCategory(int userId, string flavorCategory)
         {
             var repo = new CandyMarketRepository();
             var userFlavor = repo.EatRandomCandyByFlavor(userId, flavorCategory);
             return Ok(userFlavor);
+        }
+
+        //PUT api/candy/trade/1/2
+        [HttpPut("trade/{userId1}/{userId2}")]
+        public IActionResult TradeCandy(int userId1, int userId2)
+        {
+            var repo = new CandyMarketRepository();
+            repo.TradeCandy(userId1, userId2);
+            return Ok($"User {userId1} traded their candy stash with user {userId2}");
         }
 
         // DELETE api/<CandyMarketController>/5
