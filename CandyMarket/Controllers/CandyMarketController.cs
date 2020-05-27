@@ -61,8 +61,8 @@ namespace CandyMarket.Controllers
         public IActionResult TradeCandy(int userId1, int userId2)
         {
             var repo = new CandyMarketRepository();
-            repo.TradeCandy(userId1, userId2);
-            return Ok($"User {userId1} traded their candy stash with user {userId2}");
+            var result = repo.TradeCandy(userId1, userId2);
+            return Ok(result);
         }
 
         // DELETE api/<CandyMarketController>/5

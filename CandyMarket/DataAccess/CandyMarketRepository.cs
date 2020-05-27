@@ -114,17 +114,45 @@ namespace CandyMarket.DataAccess
             }
         }
 
-        public void TradeCandy(int userId1, int userId2)
+        public string TradeCandy(int userId1, int userId2)
         {
-            var sql = @"update UserCandy
-                        set UserId = case when UserId = @userId1 then @userId2 
-                        when UserId = @userId2 then @userId1
+            var user1OwnsCandy = OwnsCandy(userId1);
+            var user2OwnsCandy = OwnsCandy(userId2);
+            if (user1OwnsCandy && user2OwnsCandy)
+            {
+                var sql = @"update UserCandy
+                        set UserId = case when UserId = @userId1 and isEaten = 0 then @userId2 
+                        when UserId = @userId2 and isEaten = 0 then @userId1
                         else UserId end";
+
+                using (var db = new SqlConnection(ConnectionString))
+                {
+                    var parameters = new { UserId1 = userId1, UserId2 = userId2 };
+                    db.Execute(sql, parameters);
+                    return $"User {userId1} traded their candy stash with user {userId2}";
+                }
+            }
+            else return "One or more users does not own candy to trade";            
+        }
+
+        public bool OwnsCandy(int userId)
+        {
+            var sql = @"select count(*) as CandyCount
+                        from UserCandy
+                        where UserId = @userId and isEaten = 0";
 
             using (var db = new SqlConnection(ConnectionString))
             {
-                var parameters = new { UserId1 = userId1, UserId2 = userId2 };
-                db.Execute(sql, parameters);
+                var parameters = new { UserId = userId };
+                var count = db.QueryFirstOrDefault<Count>(sql, parameters);
+                if (count.CandyCount == 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
     }
