@@ -69,7 +69,7 @@ namespace CandyMarket.DataAccess
                 var parameters = new { UserCandyId = userCandyId };
                 var userCandy = db.QueryFirstOrDefault<UserCandy> (sql, parameters);
                 return userCandy;
-            }            
+            }
         }
 
         public Candy GetCandyById(int candyId)
@@ -153,6 +153,44 @@ namespace CandyMarket.DataAccess
                 {
                     return true;
                 }
+            }
+        }
+
+        public List<UserCandy> GetAllUsersCandy()
+        {
+            var sql = @"select * 
+                        from UserCandy
+                        where isEaten = 0";
+
+            using (var db = new SqlConnection(ConnectionString))
+            {
+                var candies = db.Query<UserCandy>(sql).ToList();
+                return candies;
+            }
+        }
+
+        public string TradeSinglePiece(int userCandyId1, int userCandyId2)
+        {
+            var userCandy1 = GetUserCandyById(userCandyId1);
+            var userCandy2 = GetUserCandyById(userCandyId2);
+
+            var userId1 = userCandy1.UserId;
+            var userId2 = userCandy2.UserId;
+
+            var sql = @"update UserCandy
+                        set UserId = @userId2
+		                    where UserCandy.Id = @userCandyId1";
+
+            var sql2 = @"update UserCandy
+                        set UserId = @userId1
+		                    where UserCandy.Id = @userCandyId2";
+
+            using (var db = new SqlConnection(ConnectionString))
+            {
+                var parameter = new { userId1 = userId1, userId2 = userId2, userCandyId1 = userCandyId1, userCandyId2 = userCandyId2 };
+                var userCandies = db.Execute(sql, parameter);
+                var userCandies2 = db.Execute(sql2, parameter);
+                return $"User {userId1} traded their candy stash with user {userId2}";
             }
         }
     }

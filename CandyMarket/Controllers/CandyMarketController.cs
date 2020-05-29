@@ -65,10 +65,21 @@ namespace CandyMarket.Controllers
             return Ok(result);
         }
 
-        // DELETE api/<CandyMarketController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        
+        [HttpGet("userCandy")]
+        public IActionResult GetAllUsersCandy()
         {
+            var repo = new CandyMarketRepository();
+            var result = repo.GetAllUsersCandy();
+            return Ok(result);
+        }
+
+        [HttpPut("userCandy/trade/{userCandyId1}/{userCandyId2}")]
+        public IActionResult TradeSinglePiece(int userCandyId1, int userCandyId2)
+        {
+            var repo = new CandyMarketRepository();
+            var result = repo.TradeSinglePiece(userCandyId1, userCandyId2);
+            return Ok(result);
         }
     }
 }
